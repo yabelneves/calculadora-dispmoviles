@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Selecciona la pantalla de la calculadora y todos los botones
     const pantalla = document.querySelector(".display");
     const botones = document.querySelectorAll("button");
-    
+
     // Variables para almacenar la entrada actual, la entrada previa y el operador
     let entradaActual = "";
     let entradaPrevia = "";
@@ -23,7 +23,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Maneja la entrada de números concatenándolos en la pantalla
     function manejarNumero(valor) {
-        entradaActual += valor;
+        // Evita múltiples ceros iniciales (excepto si hay un punto)
+        if (valor === "0" && entradaActual === "0") {
+            return;
+        }
+
+        // Reemplaza un cero inicial por otro número (excepto si es un punto)
+        if (entradaActual === "0" && valor !== ".") {
+            entradaActual = valor;
+        }
+        // Evita más de un punto decimal
+        else if (valor === "." && entradaActual.includes(".")) {
+            return;
+        }
+        else {
+            entradaActual += valor;
+        }
+
         actualizarPantalla(entradaActual);
     }
 
@@ -39,16 +55,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // Realiza la operación matemática basada en los valores y el operador
     function realizarCalculo() {
         let resultado = 0;
-        // ParseFloat: Convierte una cadena de texto en un número decimal (de punto flotante).
-        // Convierte las entradas entradaPrevia y entradaActual a números antes de realizar operaciones matemáticas.
         let a = parseFloat(entradaPrevia);
         let b = parseFloat(entradaActual);
 
         if (operador === "+") resultado = a + b;
         if (operador === "-") resultado = a - b;
         if (operador === "×") resultado = a * b;
-        if (operador === "÷") resultado = b !== 0 ? a / b : "Error"; // Evita la división por cero
-        
+        if (operador === "÷") resultado = b !== 0 ? a / b : "Error";
+
         actualizarPantalla(resultado);
         return resultado.toString();
     }
@@ -69,11 +83,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (!isNaN(valor) || valor === ".") { // Si es un número o un punto decimal
                 manejarNumero(valor);
-            } else if (valor === "AC") { // Botón de limpiar
+            } else if (valor === "AC") {
                 limpiarCalculadora();
-            } else if (valor === "=") { // Botón de igual
+            } else if (valor === "=") {
                 manejarIgual();
-            } else { // Cualquier otro es un operador
+            } else {
                 manejarOperador(valor);
             }
         });
